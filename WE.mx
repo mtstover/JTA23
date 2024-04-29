@@ -1,0 +1,567 @@
+(*
+What follows are Mathematica commands that can be used to verify two parts of the paper "Geometry of the Wiman-Edge monodromy" (hereafter [WE]). First, we explain how to verify the convex hulls necessary for the cusp resolution computations in section 5. Second, we explain how one verifies the various claims about S_3-invariant cubics in section 6.
+*)
+
+(*                  *)
+(* Cusp resolutions *)
+(*                  *)
+
+(*
+This section produces two lists for each cusp: points and hull. Following the notation of [WE], points contains all the "small" points of \Lambda contained in the set T_\Lambda^+, i.e., the points that map to the first quadrant under the usual embedding of Q(X) into the plane. The list called hull is a list of integers i so that {points[i]} is the (ordered) convex hull of points. From here, one can easily verify the stated convex hull of each T_\Lambda^+ in [WE].
+*)
+
+(* One might need to include ComputationalGeometry *)
+
+Needs["ComputationalGeometry`"]
+
+(* Define X and its Galois conjugate *)
+
+X = (1+Sqrt[5])/2
+
+Xb = (1-Sqrt[5])/2
+
+(* Find the convex hull for \Lambda_8 *)
+
+x1 = 2
+y1 = 2*X
+
+x2 = 2
+y2 = 2*Xb
+
+points = {}
+
+Do[If[(a*x1+b*y1>0)&&(a*x2+b*y2)>0,AppendTo[points,{a,b}]],{a,-15,15},{b,-15,15}]
+
+hull = ConvexHull[points]
+
+(* Find the convex hull for \Lambda_{24} *)
+
+x1 = 2
+y1 = 1+2*X
+
+x2 = 2
+y2 = 1+2*Xb
+
+points = {}
+
+Do[If[(a*x1+b*y1>0)&&(a*x2+b*y2)>0,AppendTo[points,{a,b}]],{a,-40,40},{b,-40,40}]
+
+hull = ConvexHull[points]
+
+(* Find the convex hull for \Lambda_{40} *)
+
+x1 = 2+6*X
+y1 = 10*X
+
+x2 = 2+6*Xb
+y2 = 10*Xb
+
+points = {}
+
+Do[If[(a*x1+b*y1>0)&&(a*x2+b*y2)>0,AppendTo[points,{a,b}]],{a,-25,25},{b,-25,25}]
+
+hull = ConvexHull[points]
+
+(* Find the convex hull for \Lambda_{120} *)
+
+x1 = 1+18*X
+y1 = 20*X
+
+x2 = 1+18*Xb
+y2 = 20*Xb
+
+points = {}
+
+Do[If[(a*x1+b*y1>0)&&(a*x2+b*y2)>0,AppendTo[points,{a,b}]],{a,-100,100},{b,-100,100}]
+
+hull = ConvexHull[points]
+
+(*                  *)
+(* Invariant cubics *)
+(*                  *)
+
+(*
+We now present a sequence of commands to check various claims from section 6 of [WE] regarding S_3-invariant cubics.
+*)
+
+X = (1 + Sqrt[5])/2
+
+(* Vertices of the icosahedron and dodecahedron *)
+
+v1 = {0, 1, (1 + Sqrt[5])/2}
+v2 = {0, 1, (-1 - Sqrt[5])/2}
+v3 = {(1 + Sqrt[5])/2, 0, 1}
+v4 = {(-1 - Sqrt[5])/2, 0, 1}
+v5 = {1, (1 + Sqrt[5])/2, 0}
+v6 = {1, (-1 - Sqrt[5])/2, 0}
+
+e1 = {1, 1, 1}
+e2 = {-1, 1, 1}
+e3 = {1, -1, 1}
+e4 = {-1, -1, 1}
+e5 = {-1 + (1 + Sqrt[5])/2, 0, (1 + Sqrt[5])/2}
+e6 = {1 + (-1 - Sqrt[5])/2, 0, (1 + Sqrt[5])/2}
+e7 = {0, (1 + Sqrt[5])/2, -1 + (1 + Sqrt[5])/2}
+e8 = {0, (1 + Sqrt[5])/2, 1 + (-1 - Sqrt[5])/2}
+e9 = {(1 + Sqrt[5])/2, -1 + (1 + Sqrt[5])/2, 0}
+e10 = {(1 + Sqrt[5])/2, 1 + (-1 - Sqrt[5])/2, 0}
+
+(* Involutions generating S_3 *)
+
+s1 = {{-1,0,0},{0,-1,0},{0,0,1}}
+
+s2 = {{-X/2, -1/2, (X-1)/2}, {-1/2, (X-1)/2, -X/2}, {(X-1)/2, -X/2, -1/2}}//FullSimplify
+
+(*                            *)
+(* Proof of Lemma 6.5 in [WE] *)
+(*                            *)
+
+(* A generic cubic *)
+
+f0[{z1_,z2_,z3_}] = a1*z1^3 + a2*z2^3 + a3*z3^3 + a4*z1^2*z2 + a5*z1^2*z3 + a6*z1*z2^2 + a7*z1*z3^2 + a8*z1*z2*z3 + a9*z2^2*z3 + a10*z2*z3^2
+
+(* Invariance under s1 with scalar lam *)
+
+Collect[f0[s1.{z1,z2,z3}]-lam*f0[{z1,z2,z3}],{z1,z2,z3}]
+
+sols0a = Solve[-a1-a1*lam==0&&-a2-a2*lam==0&&a9-a9*lam==0&&-a10-a10*lam==0&&a3-a3*lam==0&&-a4-a4*lam==0&&a5-a5*lam==0&&-a6-a6*lam==0&&a8-a8*lam==0&&-a7-a7*lam==0]
+
+(* We see that lam is either 1 or -1, which gives the following possibilities *)
+
+f0m[{z1_,z2_,z3_}] = (f0[s1.{z1,z2,z3}]-f0[{z1,z2,z3}])/2//Factor
+
+f0p[{z1_,z2_,z3_}] = (f0[s1.{z1,z2,z3}]+f0[{z1,z2,z3}])/2//Factor
+
+(* We already see that f0p factors, but we still find all s2-invariant cubics *)
+
+f0psols = Collect[(f0p[s2.{z1,z2,z3}]-f0p[{z1,z2,z3}])//FullSimplify,{z1,z2,z3}]
+
+f0psols2 = Solve[f0psols[[1]][[1]]==0&&f0psols[[2]][[1]]==0&&f0psols[[3]][[1]]==0]//FullSimplify
+
+((f0p[{z1,z2,z3}]/.f0psols2[[1]])/.a3->1//FullSimplify)-z3*((X-2)*z1^2+2*z1*z2-(X+1)*z2^2+z3^2)//Factor
+
+(* Now we analyze the f0m case, reporting the negative of Mathematica's solution in Lemma 6.5 *)
+
+f0msols = Collect[(f0m[s2.{z1,z2,z3}]+f0m[{z1,z2,z3}])//FullSimplify,{z1,z2,z3}]
+
+f0msols2 = Solve[f0msols[[1]][[2]]==0&&f0msols[[2]][[2]]==0&&f0msols[[3]][[2]]==0&&f0msols[[4]][[2]]==0&&f0msols[[5]][[2]]==0&&f0msols[[6]][[2]][[2]][[2]]==0]//FullSimplify
+
+((f0m[{z1,z2,z3}]/.f0msols2[[1]])//FullSimplify)+(
+a1*z1^3 + ((-1 + Sqrt[5])*a1 - ((1 + Sqrt[5])*a2)/2 - (-1 + (1 + Sqrt[5])/2)*a10)*z1^2*z2 + ((2 + (-1 - Sqrt[5])/2)*a1 + a2 + (-1 + (1 + Sqrt[5])/2)*a10)*z1*z2^2 + a2*z2^3 + ((-5 + (3*(1 + Sqrt[5]))/2)*a1 + (1 + (1 + Sqrt[5])/2)*a2 + (2 + (-1 - Sqrt[5])/2)*a10)*z1*z3^2 + a10*z2*z3^2)//Factor
+
+(*                          *)
+(* Proof of Proposition 6.6 *)
+(*                          *)
+
+(*
+We now define f to be the general invariant cubic from Lemma 6.5, where we replace a10 from the above with a3, so our coefficients are a1, a2, a3, instead of a1, a2, a10.
+*)
+
+f[{z1_, z2_, z3_}] = a1*z1^3 + ((-1 + Sqrt[5])*a1 - ((1 + Sqrt[5])*a2)/2 - (-1 + (1 + Sqrt[5])/2)*a3)*z1^2*z2 + ((2 + (-1 - Sqrt[5])/2)*a1 + a2 + (-1 + (1 + Sqrt[5])/2)*a3)*z1*z2^2 + a2*z2^3 + ((-5 + (3*(1 + Sqrt[5]))/2)*a1 + (1 + (1 + Sqrt[5])/2)*a2 + (2 + (-1 - Sqrt[5])/2)*a3)*z1*z3^2 + a3*z2*z3^2
+
+(* Invariance check *)
+
+f[s1.{z1,z2,z3}]+f[{z1,z2,z3}]//FullSimplify
+f[s2.{z1,z2,z3}]+f[{z1,z2,z3}]//FullSimplify
+
+(*        *)
+(* Case 1 *)
+(*        *)
+
+(*    *)
+(* 1a *)
+(*    *)
+
+Solve[f[v1]==0&&f[v3]==0&&f[e9]==0]//FullSimplify
+
+(*    *)
+(* 1b *)
+(*    *)
+
+sols1b = Solve[f[v1]==0&&f[e1]==0]//FullSimplify
+
+f1b[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1b[[1]])/.a2->1//FullSimplify
+
+(* Our solution vanishes at the correct points *)
+
+f1b[v1]//FullSimplify
+f1b[e1]//FullSimplify
+
+(* It also vanishes on the orbit P_2 *)
+
+f1b[v3]//FullSimplify
+
+(* The cubic given in [WE] is the negative of the one computed here *)
+
+f1b[{z1,z2,z3}]+(z1^3-z2^3+(X+1)*z1^2*z2+(X-2)*z1*z2^2-(X+1)*z1*z3^2+(2-X)*z2*z3^2)//FullSimplify
+
+(*    *)
+(* 1c *)
+(*    *)
+
+sols1c = Solve[f[v3]==0&&f[e1]==0]//FullSimplify
+
+f1c[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1c[[1]])/.a1->1//FullSimplify
+
+(* Our solution is the same cubic considered in 1b, up to sign *)
+
+f1c[{z1,z2,z3}]+f1b[{z1,z2,z3}]//FullSimplify
+
+(*    *)
+(* 1d *)
+(*    *)
+
+sols1d = Solve[f[e1]==0&&f[e2]==0]//FullSimplify
+
+f1d[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1d[[1]])/.a2->1//FullSimplify
+
+(* The cubic vanishes at the intersection of the lines in L_3 and L_4, using the pair \ell_{2,6} and \ell_{3,8} *)
+
+Solve[f1d[e2+r*e6]==0]//FullSimplify
+
+Solve[e2-e6==lam*(e3+s*e8)]//FullSimplify
+
+(* The cubic vanishes at three points on the lines in L_2, one being in Q_1, using \ell_{1,9} *)
+
+Solve[f1d[e1+s*e9]==0]//FullSimplify
+
+(* The cubic f1d does not vanish at P_1, P_2, or Q_3, so the two points not in Q_1 are puncture points in the sense of [WE] *)
+
+f1d[v1]//FullSimplify
+f1d[v3]//FullSimplify
+f1d[e9]//FullSimplify
+
+(* The cubic given in [WE] is the one computed here *)
+
+f1d[{z1,z2,z3}]-((1+X)*z1^3+z2^2+(1+3*X)*z1^2*z2+(1-2*X)*z1*z2^2+(X-2)*z1*z3^2-(3+3*X)*z2*z3^2)//FullSimplify
+
+(*    *)
+(* 1e *)
+(*    *)
+
+(* Tangent vector for \ell_{1,5} \in L_1 *)
+
+(r*e1+s*e5).{X,-1,1-X}//FullSimplify
+
+(* Using \ell_{1,5} means the relevant points in P_1, P_2, Q_1, and Q_2 are v_2, v_5, e_1, and e_5 *)
+
+(* We start with the case where the cubic is tangent to a line in L_1 at a point in P_1 *)
+
+sols1e1 = Solve[f[v2]==0]//FullSimplify
+
+f1e1[{z1_,z2_,z3_}] = (f[{z1,z2,z3}]/.sols1e1[[1]])//FullSimplify
+
+(* The differential is never parallel to our tangent line at v_2 *)
+
+Df1e1[{z1_,z2_,z3_}] = {D[f1e1[{z1,z2,z3}],z1],D[f1e1[{z1,z2,z3}],z2],D[f1e1[{z1,z2,z3}],z3]}
+
+f1e1sols = Solve[Df1e1[v2]==lam*{X,-1,1-X}]
+
+(* Now for the case where the cubic is tangent to a line in L_1 at a point in P_2 *)
+
+sols1e2 = Solve[f[v5]==0]//FullSimplify
+
+f1e2[{z1_,z2_,z3_}] = (f[{z1,z2,z3}]/.sols1e2[[1]])//FullSimplify
+
+(* The differential is never parallel our tangent line at v_5 *)
+
+Df1e2[{z1_,z2_,z3_}] = {D[f1e2[{z1,z2,z3}],z1],D[f1e2[{z1,z2,z3}],z2],D[f1e2[{z1,z2,z3}],z3]}
+
+f1e2sols = Solve[Df1e2[v5]==lam*{X,-1,1-X}]//FullSimplify
+
+(*    *)
+(* 1f *)
+(*    *)
+
+(* We first rule out the case where the point is in Q_1 *)
+
+sols1f1 = Solve[f[e1]==0]//FullSimplify
+
+f1f1[{z1_,z2_,z3_}] = (f[{z1,z2,z3}]/.sols1f1[[1]])//FullSimplify
+
+(* The differential is never parallel to our tangent line at e_1 *)
+
+Df1f1[{z1_,z2_,z3_}] = {D[f1f1[{z1,z2,z3}],z1],D[f1f1[{z1,z2,z3}],z2],D[f1f1[{z1,z2,z3}],z3]}
+
+f1f1sols = Solve[Df1f1[e1]==lam*{X,-1,1-X}]
+
+(* Now for the case where the point is in Q_2, our first possibility *)
+
+sols1f2 = Solve[f[e5]==0]//FullSimplify
+
+f1f2[{z1_,z2_,z3_}] = (f[{z1,z2,z3}]/.sols1f2[[1]])//FullSimplify
+
+(* The differential must dot to zero with our tangent line at e_5 *)
+
+Df1f2[{z1_,z2_,z3_}] = {D[f1f2[{z1,z2,z3}],z1],D[f1f2[{z1,z2,z3}],z2],D[f1f2[{z1,z2,z3}],z3]}
+
+f1f2sols = Solve[Df1f2[e5]==lam*{X,-1,1-X}]
+
+(* The cubic solving all the above and its differential *)
+
+f1f2a[{z1_, z2_, z3_}] = (f1f2[{z1,z2,z3}]/.f1f2sols[[1]])/.a1->1//FullSimplify
+
+Df1f2a[{z1_,z2_,z3_}] = {D[f1f2a[{z1,z2,z3}],z1],D[f1f2a[{z1,z2,z3}],z2],D[f1f2a[{z1,z2,z3}],z3]}
+
+(* Check that our equation contains e5 and is nonsingular and tangent at L_{1,5} *)
+
+f1f2a[e5]//FullSimplify
+
+Df1f2a[e5]//FullSimplify
+
+Solve[Df1f2a[e5]==lam*{X,-1,1-X}]//FullSimplify
+
+(* In fact, it is nonsingular *)
+
+Solve[Df1f2a[{z1,z2,z3}]==0]//FullSimplify
+
+(* Check that the cubic meets L_3 and L_4 at the intersection between the two lines, using the pair \ell_{2,6} and \ell_{3,8} *)
+
+Solve[f1f2a[e2+r*e6]==0]//FullSimplify
+
+Solve[e2-e6==lam*(e3+s*e8)]//FullSimplify
+
+(* Check that the cubic meets L_2 in three distinct points not from P_1, P_2, Q_1, or Q_3, using \ell_{1,9} *)
+
+Solve[f1f2a[e1+s*e9]==0]//FullSimplify
+
+f1f2a[v1]//FullSimplify
+f1f2a[v3]//FullSimplify
+f1f2a[e1]//FullSimplify
+f1f2a[e9]//FullSimplify
+
+f1f2a[{z1,z2,z3}]-(z1^3 + (13 - 8 X) z2^3 + (3 - X) z1^2 z2 + (18 - 11 X) z1 z2^2 + (3 X - 5) z1 z3^2 + (X - 2) z2 z3^2)//FullSimplify
+
+(*    *)
+(* 1g *) FINISH Q1 and Q2
+(*    *)
+
+(* The cubic through P_1 and Q_3 is singular at P_1 *)
+
+sols1gp1 = Solve[f[v1]==0&&f[e3]==0]//FullSimplify
+
+f1gp1[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1gp1[[1]])/.a1->1//FullSimplify
+
+Df1gp1[{z1_,z2_,z3_}] = {D[f1gp1[{z1,z2,z3}],z1],D[f1gp1[{z1,z2,z3}],z2],D[f1gp1[{z1,z2,z3}],z3]}
+
+Df1gp1[v1]//FullSimplify
+
+(* Check that the cubic is the one given in [WE] *)
+
+f1gp1[{z1,z2,z3}]-z1*(z1^2+(2*X-2)*z1*z2+(2-X)*z2^2+(3*X-5)*z3^2)//Factor
+
+(* The cubic through P_2 and Q_3 is singular at P_2 *)
+
+sols1gp2 = Solve[f[v3]==0&&f[e3]==0]//FullSimplify
+
+f1gp2[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1gp2[[1]])/.a2->1//FullSimplify
+
+Df1gp2[{z1_,z2_,z3_}] = {D[f1gp2[{z1,z2,z3}],z1],D[f1gp2[{z1,z2,z3}],z2],D[f1gp2[{z1,z2,z3}],z3]}
+
+Df1gp2[v3]//FullSimplify
+
+(* Check that the cubic is the one given in [WE] *)
+
+f1gp2[{z1,z2,z3}]-z2*(z2^2+(X+1)*z1^2-2*X*z1*z2-(3*X+2)*z3^2)//FullSimplify
+
+(* The cubics through Q_1  *)
+
+sols1gq1 = Solve[f[e1]==0]//FullSimplify
+
+f1gq1[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1gq1[[1]])//FullSimplify
+
+solsf1gq1 = Solve[f1gq1[r*e1+e5]==0]//FullSimplify
+
+f1gq1a[{z1_, z2_, z3_}] = f1gq1[{z1,z2,z3}]/.solsf1gq1[[1]]//FullSimplify
+f1gq1b[{z1_, z2_, z3_}] = (f1gq1[{z1,z2,z3}]/.solsf1gq1[[2]])/.a1->1//FullSimplify
+f1gq1c[{z1_, z2_, z3_}] = f1gq1[{z1,z2,z3}]/.solsf1gq1[[3]]/.a1->1//FullSimplify
+
+(* The first option vanishes at r e_1 + e_5, with coefficients depending on r *)
+
+f1gq1a[r*e1+e5]//FullSimplify
+
+(* The points of vanishing on L_1 are at e_1, r e_1 + e_5, and another point depending on r *)
+
+Solve[f1gq1a[s*e1+e5]==0]//FullSimplify
+
+(* We need r e_1 + e_5 to be a double point *)
+
+Df1gq1a[{z1_,z2_,z3_}] = {D[f1gq1a[{z1,z2,z3}],z1],D[f1gq1a[{z1,z2,z3}],z2],D[f1gq1a[{z1,z2,z3}],z3]}//FullSimplify
+
+f1gq1asolsA = Solve[f1gq1a[r*e1+e5]==0&&Df1gq1a[r*e1+e5]==lam*{X,-1,1-X}]//FullSimplify
+
+(* This gives us two subcases to analyze *)
+
+f1gq1a1[{z1_, z2_, z3_}] = (f1gq1a[{z1,z2,z3}]/.f1gq1asolsA[[2]])/.a2->1//FullSimplify
+f1gq1a2[{z1_, z2_, z3_}] = (f1gq1a[{z1,z2,z3}]/.f1gq1asolsA[[3]])/.a2->1//FullSimplify
+
+rvals1 = Solve[f1gq1a1[r*e1+e5]==0]//FullSimplify
+rvals2 = Solve[f1gq1a2[r*e1+e5]==0]//FullSimplify
+
+f1gq1a1a[{z1_, z2_, z3_}] = (f1gq1a1[{z1,z2,z3}]/.rvals1[[1]])//FullSimplify
+f1gq1a1b[{z1_, z2_, z3_}] = (f1gq1a1[{z1,z2,z3}]/.rvals1[[2]])//FullSimplify
+f1gq1a2a[{z1_, z2_, z3_}] = (f1gq1a1[{z1,z2,z3}]/.rvals2[[1]])//FullSimplify
+f1gq1a2b[{z1_, z2_, z3_}] = (f1gq1a1[{z1,z2,z3}]/.rvals2[[2]])//FullSimplify
+
+(* We check that each meets the triangle consisting of lines in L_2, L_3, L_4 in too many points *)
+
+Solve[f1gq1a1a[r*e1+e9]==0]//FullSimplify
+Solve[f1gq1a1a[r*e2+e6]==0]//FullSimplify
+Solve[f1gq1a1a[r*e3+e8]==0]//FullSimplify
+
+Solve[f1gq1a1b[r*e1+e9]==0]//FullSimplify
+Solve[f1gq1a1b[r*e2+e6]==0]//FullSimplify
+Solve[f1gq1a1b[r*e3+e8]==0]//FullSimplify
+
+Solve[f1gq1a2a[r*e1+e9]==0]//FullSimplify
+Solve[f1gq1a2a[r*e2+e6]==0]//FullSimplify
+Solve[f1gq1a2a[r*e3+e8]==0]//FullSimplify
+
+Solve[f1gq1a2b[r*e1+e9]==0]//FullSimplify
+Solve[f1gq1a2b[r*e2+e6]==0]//FullSimplify
+Solve[f1gq1a2b[r*e3+e8]==0]//FullSimplify
+
+(* The cubics through Q_2  *)
+
+sols1gq2 = Solve[f[e2]==0]//FullSimplify
+
+f1gq2[{z1_, z2_, z3_}] = (f[{z1,z2,z3}]/.sols1gq2[[1]])/.a2->1//FullSimplify
+
+Df1gq2[{z1_,z2_,z3_}] = {D[f1gq2[{z1,z2,z3}],z1],D[f1gq2[{z1,z2,z3}],z2],D[f1gq2[{z1,z2,z3}],z3]}
+
+(* There are no possible cubics *)
+
+solsf1gq2 = Solve[f1gq2[e1+r*e5]==0&&Df1gq2[e1+r*e5]==lam*{X,-1,1-X}]//FullSimplify
+
+(*    *) ********
+(* 1h *) *FINISH*
+(*    *) ********
+
+sols1h = Solve[f[e9]==0]//FullSimplify
+
+f1h[{z1_, z2_, z3_}] = f[{z1,z2,z3}]/.sols1h[[1]]//FullSimplify
+
+Df1h[{z1_,z2_,z3_}] = {D[f1h[{z1,z2,z3}],z1],D[f1h[{z1,z2,z3}],z2],D[f1h[{z1,z2,z3}],z3]}//FullSimplify
+
+f1hsols = Solve[f1h[r*e1+e5]==0]//FullSimplify
+
+f1h1[{z1_, z2_, z3_}] = f1h[{z1,z2,z3}]/.f1hsols[[1]]//FullSimplify
+f1h2[{z1_, z2_, z3_}] = f1h[{z1,z2,z3}]/.f1hsols[[2]]//FullSimplify
+f1h3[{z1_, z2_, z3_}] = f1h[{z1,z2,z3}]/.f1hsols[[3]]//FullSimplify
+f1h4[{z1_, z2_, z3_}] = f1h[{z1,z2,z3}]/.f1hsols[[4]]//FullSimplify
+
+(* The first possibility does not produce examples where all three solutions to f1h1[s*e1+e5]==0 are the same, i.e., there is no example giving a triple point *)
+
+f1h1[r*e1+e5]//FullSimplify
+
+Df1h1[{z1_,z2_,z3_}] = {D[f1h1[{z1,z2,z3}],z1],D[f1h1[{z1,z2,z3}],z2],D[f1h1[{z1,z2,z3}],z3]}//FullSimplify
+
+sols1h1 = Solve[f1h1[s*e1+e5]==0,s]//FullSimplify
+
+Solve[sols1h1[[1]][[1]][[2]]==sols1h1[[3]][[1]][[2]]&&sols1h1[[1]][[1]
+][[2]]==sols1h1[[2]][[1]][[2]]]//FullSimplify
+
+(* The last three possibilities meet lines in L_1 in three distinct points *)
+
+Solve[f1h2[s*e1+e5]==0]//FullSimplify
+Solve[f1h3[s*e1+e5]==0]//FullSimplify
+Solve[f1h4[s*e1+e5]==0]//FullSimplify
+
+f1h2[{z1,z2,z3}]/.a2->0//FullSimplify
+f1h3[{z1,z2,z3}]/.a2->0//FullSimplify
+f1h4[{z1,z2,z3}]/.a2->0//FullSimplify
+
+(*        *)
+(* Case 2 *)
+(*        *)
+
+(* The intersection points in the triangle \ell_{1,5}, \ell_{4,8}, \ell_{2,10} are represented by e_1+e_5, e_1-e_5, and e_4+e_8 *)
+
+Solve[e1+e5==s*e2+r*e10]//FullSimplify
+Solve[e1-e5==s*e4+r*e8]//FullSimplify
+Solve[e4+e8==s*e2+r*e10]//FullSimplify
+
+(* The cubic vanishing at these three points *)
+
+sols2 = Solve[(f[e1+e5]//FullSimplify)==0&&(f[e1-e5]//FullSimplify)==0&&(f[e4+e8]//FullSimplify)==0]//FullSimplify
+
+f2[{z1_, z2_, z3_}] = f[{z1,z2,z3}]/.sols2[[1]]//FullSimplify
+
+(*    *)
+(* 2a *)
+(*    *)
+
+Solve[f2[v1]==0&&f2[e9]==0]//FullSimplify
+
+Solve[f2[v3]==0&&f2[e9]==0]//FullSimplify
+
+(*    *)
+(* 2b *)
+(*    *)
+
+sols2b = Solve[f2[e1]==0]//FullSimplify
+
+f2b[{z1_, z2_, z3_}] = (f2[{z1,z2,z3}]/.sols2b[[1]])/.a1->1//FullSimplify
+
+(* Checking the claims about the other triangle of lines *)
+
+Solve[f2b[e2+r*e6]==0]//FullSimplify
+
+Solve[e2-e6==lam*(e3+s*e8)]//FullSimplify
+
+f2b[e9]//FullSimplify
+
+Solve[f2b[e1+r*e9]==0]//FullSimplify
+
+(* Checking that this is the cubic in [WE] *)
+
+f2b[{z1,z2,z3}]-(z1^3 + (1 + X)*z2^3 + X*z1^2*z2 - X*z1*z2^2 + (3*X - 2)*z1*z3^2 + (1 - 4 X)*z2*z3^2)
+
+(*    *)
+(* 2c *)
+(*    *)
+
+sols2c = Solve[f2[e2]==0]//FullSimplify
+
+f2c[{z1_, z2_, z3_}] = (f2[{z1,z2,z3}]/.sols2c[[1]])/.a1->1//FullSimplify
+
+(* Checking the claims about the other triangle of lines *)
+
+Solve[f2c[e2+r*e6]==0]//FullSimplify
+
+Solve[e2-e6==lam*(e3+s*e8)]//FullSimplify
+
+Solve[f2c[e1+r*e9]==0]//FullSimplify
+
+f2c[v1]//FullSimplify
+f2c[v3]//FullSimplify
+f2c[e9]//FullSimplify
+
+(*    *)
+(* 2d *)
+(*    *)
+
+(* By S_3-invariance, the line must be tangent to \ell_{1,5} at either e_1+e_5 or e_1-e_5 *)
+
+Df2[{z1_,z2_,z3_}] = {D[f2[{z1,z2,z3}],z1],D[f2[{z1,z2,z3}],z2],D[f2[{z1,z2,z3}],z3]}
+
+sols2d1 = Solve[(Df2[e1+e5]//FullSimplify)==lam*{X,-1,1-X}]//FullSimplify
+sols2d2 = Solve[(Df2[e1-e5]//FullSimplify)==lam*{X,-1,1-X}]//FullSimplify
+
+f2d1[{z1_, z2_, z3_}] = (f2[{z1,z2,z3}]/.sols2d1[[1]])/.a1->1//FullSimplify
+f2d2[{z1_, z2_, z3_}] = (f2[{z1,z2,z3}]/.sols2d2[[1]])/.a1->1//FullSimplify
+
+(* Check that neither vanishes at e_9 *)
+
+f2d1[e9]//FullSimplify
+f2d2[e9]//FullSimplify
+
+(* Check that each is the cubic given in [WE] *)
+
+f2d1[{z1,z2,z3}]-(z1^3 + (X-1)*z2^3 + X*z1^2*z2 + (X-2)*z1*z2^2 + (X-1)*z1*z3^2 + (1-2*X)*z2*z3^2)//FullSimplify
+
+f2d2[{z1,z2,z3}]-(z1^3 + (1-X)*z2^3 + X*z1^2*z2 + (2-X)*z1*z2^2 + (X-3)*z1*z3^2 + z2*z3^2)//FullSimplify
+
+(*                             *)
+(* This completes the analysis *)
+(*                             *)
